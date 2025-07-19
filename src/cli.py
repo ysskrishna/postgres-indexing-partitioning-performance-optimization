@@ -36,54 +36,39 @@ def list():
         console.print(f"[green]{folder}[/green]")
 
 @app.command()
-def setup(
+def run(
     scenario: str = typer.Argument(..., help="Scenario folder name (e.g., S01_basic_indexes)")
 ):
-    """Setup database tables and sample data for performance testing."""
-    
-    if scenario not in discover_scenarios():
+    """Setup and run demo for a given scenario."""
+
+    # Validate scenario
+    scenarios = discover_scenarios()
+    if scenario not in scenarios:
         console.print(f"[red]❌ Unknown scenario: {scenario}[/red]")
         raise typer.Exit(1)
-    
+
     console.print(Panel.fit(
-        f"[bold blue]Setting up {scenario} scenario[/bold blue]",
+        f"[bold blue]Setting up and running {scenario}[/bold blue]",
         border_style="blue"
     ))
-    
+
+    # --- Setup Phase ---
+    console.print(f"[yellow]⚙️  Setting up {scenario}...[/yellow]")
     if scenario == "S01_basic_indexes":
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console
-        ) as progress:
-            task = progress.add_task("Setting up S01_basic_indexes scenario...", total=None)
+        with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console) as progress:
+            task = progress.add_task(f"Setting up {scenario}...", total=None)
             setup_basic_index_scenario(users=1000, orders=5000)
             progress.update(task, completed=True)
     else:
-        console.print(f"[red]❌ Unknown scenario: {scenario}[/red]")
+        console.print(f"[red]❌ No setup defined for {scenario}[/red]")
         raise typer.Exit(1)
 
-
-
-@app.command()
-def demo(
-    scenario: str = typer.Argument(..., help="Scenario to demonstrate (e.g., S01_basic_indexes)")
-):
-    """Run performance demonstrations."""
-    
-    if scenario not in discover_scenarios():
-        console.print(f"[red]❌ Unknown scenario: {scenario}[/red]")
-        raise typer.Exit(1)
-    
-    console.print(Panel.fit(
-        f"[bold blue]Running {scenario} Demo[/bold blue]",
-        border_style="blue"
-    ))
-    
+    # --- Demo Phase ---
+    console.print(f"[yellow]🚀 Running demo for {scenario}...[/yellow]")
     if scenario == "S01_basic_indexes":
         run_basic_index_demo()
     else:
-        console.print(f"[red]❌ Unknown scenario: {scenario}[/red]")
+        console.print(f"[red]❌ No demo defined for {scenario}[/red]")
         raise typer.Exit(1)
 
 
