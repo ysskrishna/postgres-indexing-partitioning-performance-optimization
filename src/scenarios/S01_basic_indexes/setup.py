@@ -1,14 +1,8 @@
-import sys
-import os
-
-# Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
-
 from core.database import DatabaseConnection
 from datasets.generator import DataGenerator
 
 
-def setup_basic_index_scenario():
+def setup_basic_index_scenario(users: int = 1000, orders: int = 5000):
     """Setup tables and data for basic index demonstrations."""
     print("🚀 Setting up Basic Indexes Scenario...")
     
@@ -16,6 +10,9 @@ def setup_basic_index_scenario():
     generator = DataGenerator()
     
     try:
+        db.drop_table_if_exists("orders")
+        db.drop_table_if_exists("users")
+        
         # Create tables
         print("📋 Creating tables...")
         db.execute_query(generator.create_users_table())
@@ -25,7 +22,7 @@ def setup_basic_index_scenario():
         print("📊 Generating sample data...")
         
         # Users data
-        users_data = generator.generate_users_data(1000)
+        users_data = generator.generate_users_data(users)
         db.execute_many(
             "INSERT INTO users (id, username, email, first_name, last_name, age, city, country) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
             users_data
@@ -33,7 +30,7 @@ def setup_basic_index_scenario():
         print(f"✅ Inserted {len(users_data)} users")
         
         # Orders data
-        orders_data = generator.generate_orders_data(5000, 1000)
+        orders_data = generator.generate_orders_data(orders, users)
         db.execute_many(
             "INSERT INTO orders (id, user_id, order_date, total_amount, status) VALUES (%s, %s, %s, %s, %s)",
             orders_data
@@ -56,7 +53,3 @@ def setup_basic_index_scenario():
     except Exception as e:
         print(f"❌ Setup failed: {e}")
         raise
-
-
-if __name__ == "__main__":
-    setup_basic_index_scenario() 

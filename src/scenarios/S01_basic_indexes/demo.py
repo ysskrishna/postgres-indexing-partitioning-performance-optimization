@@ -1,9 +1,3 @@
-import sys
-import os
-
-# Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
-
 from core.database import DatabaseConnection
 from core.benchmark import SimpleBenchmark
 from datasets.generator import DataGenerator
@@ -105,7 +99,3 @@ def run_basic_index_demo():
     benchmark.compare_results()
     
     print("\n" + "=" * 50)
-
-
-if __name__ == "__main__":
-    run_basic_index_demo() 
