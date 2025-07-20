@@ -124,7 +124,7 @@ def run_basic_index_executor():
                 idx_tup_fetch as tuples_fetched
             FROM pg_stat_user_indexes ui
             JOIN pg_index i ON ui.indexrelid = i.indexrelid
-            WHERE i.indexrelname = '{index_name}'
+            WHERE ui.indexrelname = '{index_name}'
         """)
         if stats:
             print(f"\n{index_name}:")
