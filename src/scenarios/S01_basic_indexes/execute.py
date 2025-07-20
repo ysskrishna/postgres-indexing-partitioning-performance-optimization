@@ -11,6 +11,8 @@ def run_basic_index_executor():
     print("This demo shows how indexes dramatically improve query performance.")
     print()
     
+    TABLE_NAME = "users1"
+    
     db = DatabaseConnection()
     benchmark = SimpleBenchmark()
     generator = DataGenerator()
@@ -23,7 +25,7 @@ def run_basic_index_executor():
     print("\nTest 1: Point Query (WHERE user_id = X):")
     
     # Get a random existing user_id for testing
-    existing_user = db.execute_query("SELECT user_id FROM users ORDER BY RANDOM() LIMIT 1")
+    existing_user = db.execute_query(f"SELECT user_id FROM {TABLE_NAME} ORDER BY RANDOM() LIMIT 1")
     if not existing_user:
         print("No users found in database. Please ensure data is loaded first.")
         return
@@ -34,14 +36,14 @@ def run_basic_index_executor():
     # Without index (though PK has automatic index)
     result1, time1 = benchmark.time_query(
         db,
-        "SELECT * FROM users WHERE user_id = %s",
+        f"SELECT * FROM {TABLE_NAME} WHERE user_id = %s",
         (test_id,),
         "ID lookup (with PK index)"
     )
     print(f"Time: {time1:.4f} seconds")
     print(f"Rows: {len(result1)}")
     print("\nQuery Plan:")
-    plan1 = db.get_query_plan("SELECT * FROM users WHERE user_id = %s", (test_id,))
+    plan1 = db.get_query_plan(f"SELECT * FROM {TABLE_NAME} WHERE user_id = %s", (test_id,))
     print(plan1)
     
     # Test 2: Range Query - Created At
@@ -53,29 +55,29 @@ def run_basic_index_executor():
     
     result2, time2 = benchmark.time_query(
         db,
-        "SELECT COUNT(*) FROM users WHERE created_at BETWEEN %s AND %s",
+        f"SELECT COUNT(*) FROM {TABLE_NAME} WHERE created_at BETWEEN %s AND %s",
         (start_date, end_date),
         "Date range without index"
     )
     print(f"Time without index: {time2:.4f} seconds")
     print("\nQuery Plan (without index):")
-    plan2 = db.get_query_plan("SELECT COUNT(*) FROM users WHERE created_at BETWEEN %s AND %s", (start_date, end_date))
+    plan2 = db.get_query_plan(f"SELECT COUNT(*) FROM {TABLE_NAME} WHERE created_at BETWEEN %s AND %s", (start_date, end_date))
     print(plan2)
     
     # Create index on created_at
     print("\nCreating index on created_at...")
-    db.execute_query("CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at)")
+    db.execute_query(f"CREATE INDEX IF NOT EXISTS idx_users_created_at ON {TABLE_NAME}(created_at)")
     
     # Test with index
     result3, time3 = benchmark.time_query(
         db,
-        "SELECT COUNT(*) FROM users WHERE created_at BETWEEN %s AND %s",
+        f"SELECT COUNT(*) FROM {TABLE_NAME} WHERE created_at BETWEEN %s AND %s",
         (start_date, end_date),
         "Date range with index"
     )
     print(f"Time with index: {time3:.4f} seconds")
     print("\nQuery Plan (with index):")
-    plan3 = db.get_query_plan("SELECT COUNT(*) FROM users WHERE created_at BETWEEN %s AND %s", (start_date, end_date))
+    plan3 = db.get_query_plan(f"SELECT COUNT(*) FROM {TABLE_NAME} WHERE created_at BETWEEN %s AND %s", (start_date, end_date))
     print(plan3)
     
     # Test 3: ORDER BY Operations
@@ -84,29 +86,29 @@ def run_basic_index_executor():
     # Without index
     result4, time4 = benchmark.time_query(
         db,
-        "SELECT * FROM users ORDER BY username LIMIT 100",
+        f"SELECT * FROM {TABLE_NAME} ORDER BY username LIMIT 100",
         None,
         "ORDER BY without index"
     )
     print(f"Time without index: {time4:.4f} seconds")
     print("\nQuery Plan (without index):")
-    plan4 = db.get_query_plan("SELECT * FROM users ORDER BY username LIMIT 100")
+    plan4 = db.get_query_plan(f"SELECT * FROM {TABLE_NAME} ORDER BY username LIMIT 100")
     print(plan4)
     
     # Create index for ORDER BY
     print("\nCreating index on username...")
-    db.execute_query("CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)")
+    db.execute_query(f"CREATE INDEX IF NOT EXISTS idx_users_username ON {TABLE_NAME}(username)")
     
     # Test with index
     result5, time5 = benchmark.time_query(
         db,
-        "SELECT * FROM users ORDER BY username LIMIT 100",
+        f"SELECT * FROM {TABLE_NAME} ORDER BY username LIMIT 100",
         None,
         "ORDER BY with index"
     )
     print(f"Time with index: {time5:.4f} seconds")
     print("\nQuery Plan (with index):")
-    plan5 = db.get_query_plan("SELECT * FROM users ORDER BY username LIMIT 100")
+    plan5 = db.get_query_plan(f"SELECT * FROM {TABLE_NAME} ORDER BY username LIMIT 100")
     print(plan5)
     
     # Compare all results

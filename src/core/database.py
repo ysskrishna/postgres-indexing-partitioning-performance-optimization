@@ -1,4 +1,5 @@
 import psycopg2
+import io
 from typing import List, Tuple, Optional, Dict, Any
 
 
@@ -37,6 +38,16 @@ class DatabaseConnection:
             with conn.cursor() as cursor:
                 cursor.executemany(query, params_list)
                 conn.commit()
+    
+    def bulk_insert_copy(self, table_name: str, columns: Tuple[str], data: List[tuple]):
+        with self.connect() as conn:
+            with conn.cursor() as cursor:
+                buffer = io.StringIO()
+                for row in data:
+                    buffer.write('\t'.join([str(x) if x is not None else '\\N' for x in row]) + '\n')
+                buffer.seek(0)
+                cursor.copy_from(buffer, table_name, sep='\t', columns=columns)
+            conn.commit()
     
     def get_query_plan(self, query: str, params: Optional[tuple] = None) -> str:
         """Get the execution plan for a query."""

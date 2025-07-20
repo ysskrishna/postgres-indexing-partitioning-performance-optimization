@@ -10,10 +10,10 @@ class DataGenerator:
         Faker.seed(seed)
         random.seed(seed)
     
-    def create_users_table(self) -> str:
+    def create_users_table(self, table_name: str) -> str:
         """Create users table SQL."""
-        return """
-        CREATE TABLE IF NOT EXISTS users (
+        return f"""
+        CREATE TABLE IF NOT EXISTS {table_name} (
             user_id SERIAL PRIMARY KEY,
             username VARCHAR UNIQUE NOT NULL,
             email VARCHAR UNIQUE NOT NULL,
