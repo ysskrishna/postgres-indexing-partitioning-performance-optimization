@@ -12,42 +12,33 @@ console = Console()
 
 class ScenarioManager:
     def __init__(self):
-        self._scenarios = self._discover_scenarios()        
+        self._scenarios = {
+            "S01_basic_indexes": self._run_S01,
+        }
 
-    def _discover_scenarios(self):
-        return [
-            folder.name for folder in SCENARIOS_PATH.iterdir()
-            if folder.is_dir() and not folder.name.startswith("__")
-        ]
-    
     def list_scenarios(self):
-        return self._scenarios
+        return list(self._scenarios.keys())
 
-    
     def run(self, name):
+        """Dispatch to scenario-specific run method."""
         if name not in self._scenarios:
             raise ValueError(f"Scenario {name} not found")
+        
+        self._scenarios[name]()
 
+    def _run_S01(self):
         console.print(Panel.fit(
-            f"[bold blue]Setting up and running {name}[/bold blue]",
+            "[bold blue]Setting up and running S01_basic_indexes[/bold blue]",
             border_style="blue"
         ))
 
         # --- Setup Phase ---
-        console.print(f"[yellow]⚙️  Setting up {name}...[/yellow]")
-        if name == "S01_basic_indexes":
-            with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console) as progress:
-                task = progress.add_task(f"Setting up {name}...", total=None)
-                setup_basic_index_scenario(users=1000, orders=5000)
-                progress.update(task, completed=True)
-        else:
-            console.print(f"[red]❌ No setup defined for {name}[/red]")
-            raise ValueError(f"No setup defined for {name}")
+        console.print("[yellow]⚙️  Setting up S01_basic_indexes...[/yellow]")
+        with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console) as progress:
+            task = progress.add_task("Setting up S01_basic_indexes...", total=None)
+            setup_basic_index_scenario(users=1000, orders=5000)
+            progress.update(task, completed=True)
 
         # --- Demo Phase ---
-        console.print(f"[yellow]🚀 Running demo for {name}...[/yellow]")
-        if name == "S01_basic_indexes":
-            run_basic_index_demo()
-        else:
-            console.print(f"[red]❌ No demo defined for {name}[/red]")
-            raise ValueError(f"No demo defined for {name}")
+        console.print("[yellow]🚀 Running demo for S01_basic_indexes...[/yellow]")
+        run_basic_index_demo()
