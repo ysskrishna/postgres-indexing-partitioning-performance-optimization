@@ -3,7 +3,7 @@ from core.benchmark import SimpleBenchmark
 from datasets.generator import DataGenerator
 
 
-def run_basic_index_demo():
+def run_basic_index_executor():
     """Run the basic indexes demonstration."""
     print("🔍 Basic Indexes Demo")
     print("=" * 50)

@@ -1,7 +1,3 @@
-"""
-Simple data generator for PostgreSQL performance demos.
-"""
-
 from faker import Faker
 from typing import List, Tuple
 import random

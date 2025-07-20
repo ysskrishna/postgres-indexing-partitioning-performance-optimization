@@ -28,7 +28,7 @@ def list():
 def run(
     scenario: str = typer.Argument(..., help="Scenario folder name (e.g., S01_basic_indexes)")
 ):
-    """Setup and run demo for a given scenario."""
+    """Setup and run a given scenario."""
     try:
         console.print(f"[yellow]⚙️  Running {scenario}...[/yellow]")
         scenario_manager.run(scenario)

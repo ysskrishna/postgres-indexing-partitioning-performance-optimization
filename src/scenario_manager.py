@@ -4,7 +4,7 @@ from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from scenarios.S01_basic_indexes.setup import setup_basic_index_scenario
-from scenarios.S01_basic_indexes.demo import run_basic_index_demo
+from src.scenarios.S01_basic_indexes.execute import run_basic_index_executor
 
 
 SCENARIOS_PATH = Path(__file__).parent / "scenarios"
@@ -39,6 +39,6 @@ class ScenarioManager:
             setup_basic_index_scenario(users=1000, orders=5000)
             progress.update(task, completed=True)
 
-        # --- Demo Phase ---
-        console.print("[yellow]🚀 Running demo for S01_basic_indexes...[/yellow]")
-        run_basic_index_demo()
+        # --- Execute Phase ---
+        console.print("[yellow]🚀 Running executor for S01_basic_indexes...[/yellow]")
+        run_basic_index_executor()
