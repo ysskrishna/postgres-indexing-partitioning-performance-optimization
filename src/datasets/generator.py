@@ -31,7 +31,6 @@ class DataGenerator:
         users = []
         for i in range(count):
             user = (
-                i + 1,  # user_id
                 self.fake.unique.user_name(),  # username
                 self.fake.unique.email(),  # email
                 self.fake.first_name(),  # first_name

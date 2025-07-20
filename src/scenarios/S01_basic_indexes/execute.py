@@ -1,11 +1,12 @@
 from core.database import DatabaseConnection
 from core.benchmark import SimpleBenchmark
 from datasets.generator import DataGenerator
+from datetime import datetime, timedelta
 
 
 def run_basic_index_executor():
     """Run the basic indexes demonstration."""
-    print("🔍 Basic Indexes Demo")
+    print("Basic Indexes Demo")
     print("=" * 50)
     print("This demo shows how indexes dramatically improve query performance.")
     print()
@@ -15,87 +16,121 @@ def run_basic_index_executor():
     generator = DataGenerator()
     
     # Get sample data for testing
-    users_data = generator.generate_users_data(100)
-    test_email = users_data[0][2]  # Get first user's email
-    test_city = users_data[0][6]   # Get first user's city
+    print("\nRunning test queries on user records:")
+    print("-" * 50)
     
-    print("📊 Testing Query Performance:")
-    print("-" * 30)
+    # Test 1: Point Query - ID lookup
+    print("\nTest 1: Point Query (WHERE user_id = X):")
     
-    # Test 1: Query without indexes
-    print("\n1️⃣ Query WITHOUT indexes:")
-    print(f"   Finding user with email: {test_email}")
+    # Get a random existing user_id for testing
+    existing_user = db.execute_query("SELECT user_id FROM users ORDER BY RANDOM() LIMIT 1")
+    if not existing_user:
+        print("No users found in database. Please ensure data is loaded first.")
+        return
     
+    test_id = existing_user[0][0]
+    print(f"Testing with user_id: {test_id}")
+    
+    # Without index (though PK has automatic index)
     result1, time1 = benchmark.time_query(
-        db, 
-        "SELECT * FROM users WHERE email = %s", 
-        (test_email,),
-        "Query without index"
+        db,
+        "SELECT * FROM users WHERE user_id = %s",
+        (test_id,),
+        "ID lookup (with PK index)"
     )
+    print(f"Time: {time1:.4f} seconds")
+    print(f"Rows: {len(result1)}")
+    print("\nQuery Plan:")
+    plan1 = db.get_query_plan("SELECT * FROM users WHERE user_id = %s", (test_id,))
+    print(plan1)
     
-    print(f"   ⏱️  Time: {time1:.4f} seconds")
-    print(f"   📄 Rows returned: {len(result1)}")
+    # Test 2: Range Query - Created At
+    print("\nTest 2: Range Query (WHERE created_at BETWEEN X AND Y):")
     
-    # Show query plan
-    print("\n   🔍 Query Plan (without index):")
-    plan1 = db.get_query_plan("SELECT * FROM users WHERE email = %s", (test_email,))
-    print("   " + plan1.replace('\n', '\n   '))
-    
-    # Create index
-    print("\n2️⃣ Creating index on email column...")
-    db.execute_query("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)")
-    print("   ✅ Index created!")
-    
-    # Test 2: Query with index
-    print("\n3️⃣ Query WITH index:")
-    print(f"   Finding user with email: {test_email}")
+    # First without index
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=7)
     
     result2, time2 = benchmark.time_query(
-        db, 
-        "SELECT * FROM users WHERE email = %s", 
-        (test_email,),
-        "Query with index"
+        db,
+        "SELECT COUNT(*) FROM users WHERE created_at BETWEEN %s AND %s",
+        (start_date, end_date),
+        "Date range without index"
     )
+    print(f"Time without index: {time2:.4f} seconds")
+    print("\nQuery Plan (without index):")
+    plan2 = db.get_query_plan("SELECT COUNT(*) FROM users WHERE created_at BETWEEN %s AND %s", (start_date, end_date))
+    print(plan2)
     
-    print(f"   ⏱️  Time: {time2:.4f} seconds")
-    print(f"   📄 Rows returned: {len(result2)}")
+    # Create index on created_at
+    print("\nCreating index on created_at...")
+    db.execute_query("CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at)")
     
-    # Show query plan
-    print("\n   🔍 Query Plan (with index):")
-    plan2 = db.get_query_plan("SELECT * FROM users WHERE email = %s", (test_email,))
-    print("   " + plan2.replace('\n', '\n   '))
-    
-    # Compare results
-    benchmark.compare_results()
-    
-    # Test city query
-    print("\n" + "=" * 50)
-    print("🏙️  Testing another query - Find users by city:")
-    print(f"   Finding users in city: {test_city}")
-    
-    benchmark.clear_results()
-    
-    # Without index
+    # Test with index
     result3, time3 = benchmark.time_query(
         db,
-        "SELECT * FROM users WHERE city = %s",
-        (test_city,),
-        "City query without index"
+        "SELECT COUNT(*) FROM users WHERE created_at BETWEEN %s AND %s",
+        (start_date, end_date),
+        "Date range with index"
     )
-    print(f"   ⏱️  Time without index: {time3:.4f} seconds")
+    print(f"Time with index: {time3:.4f} seconds")
+    print("\nQuery Plan (with index):")
+    plan3 = db.get_query_plan("SELECT COUNT(*) FROM users WHERE created_at BETWEEN %s AND %s", (start_date, end_date))
+    print(plan3)
     
-    # Create index on city
-    db.execute_query("CREATE INDEX IF NOT EXISTS idx_users_city ON users(city)")
+    # Test 3: ORDER BY Operations
+    print("\nTest 3: ORDER BY Operations:")
     
-    # With index
+    # Without index
     result4, time4 = benchmark.time_query(
         db,
-        "SELECT * FROM users WHERE city = %s",
-        (test_city,),
-        "City query with index"
+        "SELECT * FROM users ORDER BY username LIMIT 100",
+        None,
+        "ORDER BY without index"
     )
-    print(f"   ⏱️  Time with index: {time4:.4f} seconds")
+    print(f"Time without index: {time4:.4f} seconds")
+    print("\nQuery Plan (without index):")
+    plan4 = db.get_query_plan("SELECT * FROM users ORDER BY username LIMIT 100")
+    print(plan4)
     
+    # Create index for ORDER BY
+    print("\nCreating index on username...")
+    db.execute_query("CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)")
+    
+    # Test with index
+    result5, time5 = benchmark.time_query(
+        db,
+        "SELECT * FROM users ORDER BY username LIMIT 100",
+        None,
+        "ORDER BY with index"
+    )
+    print(f"Time with index: {time5:.4f} seconds")
+    print("\nQuery Plan (with index):")
+    plan5 = db.get_query_plan("SELECT * FROM users ORDER BY username LIMIT 100")
+    print(plan5)
+    
+    # Compare all results
+    print("\nPerformance Summary:")
     benchmark.compare_results()
     
-    print("\n" + "=" * 50)
+    # Show I/O Stats for each index
+    print("\nIndex Statistics:")
+    for index_name in ["users_pkey", "idx_users_created_at", "idx_users_username"]:
+        stats = db.execute_query(f"""
+            SELECT 
+                pg_size_pretty(pg_relation_size(i.indexrelid)) as index_size,
+                idx_scan as number_of_scans,
+                idx_tup_read as tuples_read,
+                idx_tup_fetch as tuples_fetched
+            FROM pg_stat_user_indexes ui
+            JOIN pg_index i ON ui.indexrelid = i.indexrelid
+            WHERE i.indexrelname = '{index_name}'
+        """)
+        if stats:
+            print(f"\n{index_name}:")
+            print(f"    Size: {stats[0][0]}")
+            print(f"    Scans: {stats[0][1]}")
+            print(f"    Tuples read: {stats[0][2]}")
+            print(f"    Tuples fetched: {stats[0][3]}")
+    
+    print("\nBasic Indexes Demo completed!")

@@ -4,7 +4,7 @@ from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from scenarios.S01_basic_indexes.setup import setup_basic_index_scenario
-from src.scenarios.S01_basic_indexes.execute import run_basic_index_executor
+from scenarios.S01_basic_indexes.execute import run_basic_index_executor
 
 
 SCENARIOS_PATH = Path(__file__).parent / "scenarios"
@@ -36,7 +36,7 @@ class ScenarioManager:
         console.print("[yellow]⚙️  Setting up S01_basic_indexes...[/yellow]")
         with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console) as progress:
             task = progress.add_task("Setting up S01_basic_indexes...", total=None)
-            setup_basic_index_scenario(users=1000, orders=5000)
+            setup_basic_index_scenario(users=1_000_000)
             progress.update(task, completed=True)
 
         # --- Execute Phase ---
