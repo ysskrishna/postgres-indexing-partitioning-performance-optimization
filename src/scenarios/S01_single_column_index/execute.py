@@ -4,7 +4,7 @@ from core.logger import console
 from core.base import BaseExecute
 from datetime import datetime, timedelta
 
-class S01Execute(BaseExecute):
+class Execute(BaseExecute):
     def __init__(self):
         self.db = DatabaseConnection()
         self.benchmark = SimpleBenchmark()

@@ -4,7 +4,7 @@ from core.benchmark import SimpleBenchmark
 from core.logger import console
 from core.base import BaseSetup
 
-class S01Setup(BaseSetup):
+class Setup(BaseSetup):
     def __init__(self):
         self.db = DatabaseConnection()
         self.generator = DataGenerator()
