@@ -1,5 +1,5 @@
 from pathlib import Path
-from rich.console import Console
+from core.logger import console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
@@ -8,7 +8,6 @@ from scenarios.S01_basic_indexes.execute import run_basic_index_executor
 
 
 SCENARIOS_PATH = Path(__file__).parent / "scenarios"
-console = Console()
 
 class ScenarioManager:
     def __init__(self):
@@ -34,10 +33,7 @@ class ScenarioManager:
 
         # --- Setup Phase ---
         console.print("[yellow]⚙️  Setting up S01_basic_indexes...[/yellow]")
-        with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console) as progress:
-            task = progress.add_task("Setting up S01_basic_indexes...", total=None)
-            setup_basic_index_scenario(users=1_000_000)
-            progress.update(task, completed=True)
+        setup_basic_index_scenario(users=1_000_000)
 
         # --- Execute Phase ---
         console.print("[yellow]🚀 Running executor for S01_basic_indexes...[/yellow]")
