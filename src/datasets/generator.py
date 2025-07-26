@@ -26,18 +26,29 @@ class DataGenerator:
         );
         """
     
-    def generate_users_data(self, count: int = 1000) -> List[Tuple]:
-        """Generate sample user data."""
+    def generate_users_data(self, count: int, start_index: int = 0) -> List[Tuple]:
+        """Generate optimized user data using firstname+lastname+index for uniqueness."""
+        # Pre-generate pools per batch
+        first_names = [self.fake.first_name() for _ in range(500)]
+        last_names = [self.fake.last_name() for _ in range(500)]
+        cities = [self.fake.city() for _ in range(200)]
+        countries = [self.fake.country() for _ in range(100)]
+
         users = []
-        for i in range(count):
-            user = (
-                self.fake.unique.user_name(),  # username
-                self.fake.unique.email(),  # email
-                self.fake.first_name(),  # first_name
-                self.fake.last_name(),  # last_name
-                random.randint(18, 80),  # age
-                self.fake.city(),  # city
-                self.fake.country(),  # country
+        for i in range(start_index, start_index + count):
+            first = random.choice(first_names)
+            last = random.choice(last_names)
+            username = f"{first.lower()}.{last.lower()}{i}"
+            email = f"{username}@example.com"
+            users.append(
+                (
+                    username,          # unique username
+                    email,             # unique email
+                    first,             # first name
+                    last,              # last name
+                    random.randint(18, 80),  # age
+                    random.choice(cities),
+                    random.choice(countries),
+                )
             )
-            users.append(user)
         return users

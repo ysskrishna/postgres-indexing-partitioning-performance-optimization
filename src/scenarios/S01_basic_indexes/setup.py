@@ -34,7 +34,7 @@ def setup_basic_index_scenario(users: int = 1_000_000):
             
             # Measure data generation time
             generation_start = time.time()
-            users_data = generator.generate_users_data(batch_size)
+            users_data = generator.generate_users_data(batch_size, i)
             generation_time = time.time() - generation_start
             total_generation_time += generation_time
             
