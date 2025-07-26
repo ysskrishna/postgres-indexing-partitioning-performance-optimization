@@ -1,6 +1,7 @@
 from faker import Faker
 from typing import List, Tuple
 import random
+from datetime import datetime, timedelta
 
 class DataGenerator:
     """Generate sample data for performance testing."""
@@ -22,9 +23,17 @@ class DataGenerator:
             age INTEGER,
             city VARCHAR,
             country VARCHAR,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP
         );
         """
+    
+    def random_datetime(self, start: datetime, end: datetime) -> datetime:
+        """
+        Generate a random datetime between `start` and `end`.
+        """
+        delta = end - start
+        random_seconds = random.randint(0, int(delta.total_seconds()))
+        return start + timedelta(seconds=random_seconds)
     
     def generate_users_data(self, count: int, start_index: int = 0) -> List[Tuple]:
         """Generate optimized user data using firstname+lastname+index for uniqueness."""
@@ -33,6 +42,9 @@ class DataGenerator:
         last_names = [self.fake.last_name() for _ in range(500)]
         cities = [self.fake.city() for _ in range(200)]
         countries = [self.fake.country() for _ in range(100)]
+        
+        created_at_start = datetime.now() - timedelta(days=365)
+        created_at_end = datetime.now()
 
         users = []
         for i in range(start_index, start_index + count):
@@ -49,6 +61,7 @@ class DataGenerator:
                     random.randint(18, 80),  # age
                     random.choice(cities),
                     random.choice(countries),
+                    self.random_datetime(created_at_start, created_at_end)
                 )
             )
         return users

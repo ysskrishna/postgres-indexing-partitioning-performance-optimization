@@ -62,4 +62,4 @@ class SimpleBenchmark:
     def timed(func, *args, **kwargs):
         start = time.time()
         result = func(*args, **kwargs)
-        return result, time.time() - start
+        return time.time() - start, result
