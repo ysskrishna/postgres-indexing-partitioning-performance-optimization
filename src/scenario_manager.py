@@ -2,8 +2,8 @@ from pathlib import Path
 from core.logger import console
 from rich.panel import Panel
 
-from scenarios.S01_basic_indexes.setup import S01Setup
-from scenarios.S01_basic_indexes.execute import S01Execute
+from scenarios.S01_single_column_index.setup import S01Setup
+from scenarios.S01_single_column_index.execute import S01Execute
 
 
 SCENARIOS_PATH = Path(__file__).parent / "scenarios"
@@ -11,7 +11,7 @@ SCENARIOS_PATH = Path(__file__).parent / "scenarios"
 class ScenarioManager:
     def __init__(self):
         self._scenarios = {
-            "S01_basic_indexes": self._run_S01,
+            "S01_single_column_index": self._run_S01,
         }
 
     def list_scenarios(self):
@@ -30,9 +30,7 @@ class ScenarioManager:
 
     def _run_S01(self):
         # --- Setup Phase ---
-        console.print("[yellow]⚙️  Setting up S01_basic_indexes...[/yellow]")
         S01Setup().setup(users=1_000_000)
 
         # --- Execute Phase ---
-        console.print("[yellow]🚀 Running executor for S01_basic_indexes...[/yellow]")
         S01Execute().execute()

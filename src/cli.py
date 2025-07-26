@@ -25,7 +25,7 @@ def list():
 
 @app.command()
 def run(
-    scenario: str = typer.Argument(..., help="Scenario folder name (e.g., S01_basic_indexes)")
+    scenario: str = typer.Argument(..., help="Scenario folder name")
 ):
     """Setup and run a given scenario."""
     try:
