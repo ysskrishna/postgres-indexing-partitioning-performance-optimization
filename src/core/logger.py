@@ -5,7 +5,7 @@ class MyLogger:
     def __init__(self):
         self.console = Console(record=True)
     
-    def print(self, message: str, console_only: bool = False, report_only: bool = False):
+    def print(self, message: str, console_only: bool = False, report_only: bool = False, *args, **kwargs):
         """
         Log a message with options:
         - console_only=True: Show only in console, do NOT save to report.
@@ -14,19 +14,19 @@ class MyLogger:
         """
         if console_only:
             # Console only: print and remove from record
-            self.console.print(message)
+            self.console.print(message, *args, **kwargs)
             self.console._record_buffer.pop()
 
         elif report_only:
             # Report only: capture silently without printing
             self.console.begin_capture()
-            self.console.print(message)
+            self.console.print(message, *args, **kwargs)
             captured = self.console.end_capture()
             self.console._record_buffer.append(captured)
 
         else:
             # Default: console + report
-            self.console.print(message)
+            self.console.print(message, *args, **kwargs)
 
     def save_html(self, filename):
         self.console.save_html(filename)

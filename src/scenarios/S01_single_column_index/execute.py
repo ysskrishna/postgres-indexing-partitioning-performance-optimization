@@ -10,35 +10,55 @@ class S01Execute(BaseExecute):
         self.benchmark = SimpleBenchmark()
         self.TABLE_NAME = "users"
     
-    def get_random_user(self):
-        return self.db.execute_query(f"SELECT user_id FROM {self.TABLE_NAME} ORDER BY RANDOM() LIMIT 1")
-    
-    
     def execute(self):
         self.run_range_query_created_at()
-        self.run_order_by_username()
+        self.run_equality_search_age()
+        self.run_in_clause_age()
         
     def run_range_query_created_at(self):
-        console.print("\n[bold yellow]📊 Test: Range Query (WHERE created_at BETWEEN X AND Y)[/bold yellow]")
+        console.print("\n[bold]📊 Test: Range Query (created_at BETWEEN)[/bold]")
+
+        # Get date range from existing data
+        date_result = self.db.execute_query(f"SELECT MIN(created_at), MAX(created_at) FROM {self.TABLE_NAME}")
+        min_date, max_date = date_result[0]
+        mid_date = min_date + (max_date - min_date) / 2
+        end_date = mid_date + timedelta(days=30)
         
-        start_date = datetime.now() - timedelta(days=30)
-        end_date = start_date + timedelta(days=7)
+        time1, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE created_at BETWEEN %s AND %s", (mid_date, end_date))
+        console.print(f"[red]⏱️  Without index:[/red] [white]{time1:.4f}s[/white]")
         
-        time1, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE created_at BETWEEN %s AND %s", (start_date, end_date))
-        console.print(f"[red]⏱️  Time without index:[/red] [bold]{time1:.4f}[/bold] seconds")
+        self.db.execute_query(f"CREATE INDEX idx_users_created_at ON {self.TABLE_NAME}(created_at)")
         
-        self.db.execute_query(f"CREATE INDEX IF NOT EXISTS idx_users_created_at ON {self.TABLE_NAME}(created_at)")
+        time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE created_at BETWEEN %s AND %s", (mid_date, end_date))
+        console.print(f"[green]⚡ With index:[/green] [white]{time2:.4f}s[/white] | [white]Speedup: {time1/time2:.1f}x[/white]")
         
-        time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE created_at BETWEEN %s AND %s", (start_date, end_date))
-        console.print(f"[green]⚡ Time with index:[/green] [bold]{time2:.4f}[/bold] seconds")
+        self.db.execute_query(f"DROP INDEX idx_users_created_at")
     
-    def run_order_by_username(self):
-        console.print("\n[bold yellow]📊 Test: ORDER BY Operations[/bold yellow]")
+    def run_equality_search_age(self):
+        console.print("\n[bold]📊 Test: Equality Search (age = X)[/bold]")
         
-        time1, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT * FROM {self.TABLE_NAME} ORDER BY username LIMIT 100", None)
-        console.print(f"[red]⏱️  Time without index:[/red] [bold]{time1:.4f}[/bold] seconds")
+        # Get random age from existing data
+        age_result = self.db.execute_query(f"SELECT age FROM {self.TABLE_NAME} ORDER BY RANDOM() LIMIT 1")
+        test_age = age_result[0][0]
         
-        self.db.execute_query(f"CREATE INDEX IF NOT EXISTS idx_users_username ON {self.TABLE_NAME}(username)")
+        time1, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE age = %s", (test_age,))
+        console.print(f"[red]⏱️  Without index:[/red] [white]{time1:.4f}s[/white]")
         
-        time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT * FROM {self.TABLE_NAME} ORDER BY username LIMIT 100", None)
-        console.print(f"[green]⚡ Time with index:[/green] [bold]{time2:.4f}[/bold] seconds")
+        self.db.execute_query(f"CREATE INDEX idx_users_age ON {self.TABLE_NAME}(age)")
+        
+        time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE age = %s", (test_age,))
+        console.print(f"[green]⚡ With index:[/green] [white]{time2:.4f}s[/white] | [white]Speedup: {time1/time2:.1f}x[/white]")
+        
+        self.db.execute_query(f"DROP INDEX idx_users_age")
+    
+    def run_in_clause_age(self):
+        console.print("\n[bold]📊 Test: IN Clause (age IN (...))[/bold]")
+        ages = [20, 25, 30, 35]
+        time1, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE age IN %s", (tuple(ages),))
+        console.print(f"[red]⏱️  Without index:[/red] [white]{time1:.4f}s[/white]")
+
+        self.db.execute_query(f"CREATE INDEX idx_users_age_in ON {self.TABLE_NAME}(age)")
+        time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE age IN %s", (tuple(ages),))
+        console.print(f"[green]⚡ With index:[/green] [white]{time2:.4f}s[/white] | [white]Speedup: {time1/time2:.1f}x[/white]")
+
+        self.db.execute_query(f"DROP INDEX idx_users_age_in")

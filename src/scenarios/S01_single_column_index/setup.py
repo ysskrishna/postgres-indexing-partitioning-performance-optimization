@@ -15,7 +15,7 @@ class S01Setup(BaseSetup):
         try:
             self.db.drop_table_if_exists(self.TABLE_NAME)
             
-            console.print(f"[bold green]📋 Creating {self.TABLE_NAME} table...[/bold green]")
+            console.print(f"[bold]📋 Creating {self.TABLE_NAME} table...[/bold]")
             self.db.execute_query(self.generator.create_users_table(self.TABLE_NAME))
             batch_size = 50000
             columns = ('username', 'email', 'first_name', 'last_name', 'age', 'city', 'country', 'created_at')
@@ -25,12 +25,11 @@ class S01Setup(BaseSetup):
                 insertion_time, _ = SimpleBenchmark.timed(self.db.bulk_insert_copy, self.TABLE_NAME, columns, users_data)
                 
                 console.print(
-                    f"[bold cyan]📊 Progress:[/bold cyan] [green]{i+batch_size:,}[/green]/[bold]{users:,}[/bold] | "
-                    f"[bold magenta]⚙️  Generation:[/bold magenta] [yellow]{generation_time:.2f}s[/yellow] | "
-                    f"[bold blue]💾 Insertion:[/bold blue] [yellow]{insertion_time:.2f}s[/yellow]"
+                    f"📊 Progress: {i+batch_size:,}/{users:,} | "
+                    f"⚙️  Generation: [white]{generation_time:.2f}s[/white] | "
+                    f"💾 Insertion: [white]{insertion_time:.2f}s[/white]"
                 )
                 
-            console.print("[bold green]✅ Basic Indexes Scenario setup completed![/bold green]")
             
         except Exception as e:
             console.print(f"[bold red]❌ Error: Setup failed: {e}[/bold red]")
