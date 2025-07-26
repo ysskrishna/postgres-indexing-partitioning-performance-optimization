@@ -24,11 +24,10 @@ def run_basic_index_executor():
     end_date = datetime.now()
     start_date = end_date - timedelta(days=7)
     
-    result2, time2 = benchmark.time_query(
+    time2, _ = benchmark.time_query(
         db,
         f"SELECT COUNT(*) FROM {TABLE_NAME} WHERE created_at BETWEEN %s AND %s",
         (start_date, end_date),
-        "Date range without index"
     )
     console.print(f"Time without index: {time2:.4f} seconds")
     
@@ -37,11 +36,10 @@ def run_basic_index_executor():
     db.execute_query(f"CREATE INDEX IF NOT EXISTS idx_users_created_at ON {TABLE_NAME}(created_at)")
     
     # Test with index
-    result3, time3 = benchmark.time_query(
+    time3, _ = benchmark.time_query(
         db,
         f"SELECT COUNT(*) FROM {TABLE_NAME} WHERE created_at BETWEEN %s AND %s",
-        (start_date, end_date),
-        "Date range with index"
+        (start_date, end_date)
     )
     console.print(f"Time with index: {time3:.4f} seconds")
     
@@ -49,11 +47,10 @@ def run_basic_index_executor():
     console.print("\nTest 3: ORDER BY Operations:")
     
     # Without index
-    result4, time4 = benchmark.time_query(
+    time4, _ = benchmark.time_query(
         db,
         f"SELECT * FROM {TABLE_NAME} ORDER BY username LIMIT 100",
-        None,
-        "ORDER BY without index"
+        None
     )
     console.print(f"Time without index: {time4:.4f} seconds")
     
@@ -62,10 +59,9 @@ def run_basic_index_executor():
     db.execute_query(f"CREATE INDEX IF NOT EXISTS idx_users_username ON {TABLE_NAME}(username)")
     
     # Test with index
-    result5, time5 = benchmark.time_query(
+    time5, _ = benchmark.time_query(
         db,
         f"SELECT * FROM {TABLE_NAME} ORDER BY username LIMIT 100",
-        None,
-        "ORDER BY with index"
+        None
     )
     console.print(f"Time with index: {time5:.4f} seconds")
