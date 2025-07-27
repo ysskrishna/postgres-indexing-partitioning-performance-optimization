@@ -2,6 +2,7 @@ from pathlib import Path
 from core.logger import console
 from rich.panel import Panel
 import importlib
+import re
 
 SCENARIOS_PATH = Path(__file__).parent / "scenarios"
 
@@ -13,6 +14,8 @@ class ScenarioManager:
         scenarios = {}
         
         for scenario_dir in SCENARIOS_PATH.iterdir():
+            if not re.match(r"^S\d{2}_", scenario_dir.name):
+                continue
             scenario = {"setup": False,"execute": False}
             if scenario_dir.is_dir() and (scenario_dir / "setup.py").exists():
                 scenario["setup"] = f"{SCENARIOS_PATH.name}.{scenario_dir.name}.setup"
