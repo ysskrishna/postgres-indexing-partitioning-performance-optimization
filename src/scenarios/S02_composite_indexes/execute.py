@@ -13,6 +13,7 @@ class Execute(BaseExecute):
         self.run_multi_column_where()
         self.run_ordering_with_where()
         self.run_column_order_impact()
+        self.run_pagination_performance()
 
     def run_multi_column_where(self):
         console.print("\n[bold yellow]📊 Test: Multi-column WHERE (age + city)[/bold yellow]")
@@ -66,3 +67,38 @@ class Execute(BaseExecute):
         time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE city = %s AND age = %s", (test_city, test_age))
         console.print(f"[blue]📊 Index (age,city):[/blue] [white]{time2:.4f}s[/white]")
         self.db.execute_query(f"DROP INDEX idx_age_city")
+
+    def run_pagination_performance(self):
+        console.print("\n[bold yellow]📊 Test: Pagination Performance (ORDER BY + OFFSET/LIMIT)[/bold yellow]")
+        
+        # Get total count to calculate meaningful offsets
+        total_count = self.db.execute_query(f"SELECT COUNT(*) FROM {self.TABLE_NAME}")[0][0]
+        
+        # Test different pagination scenarios
+        offsets = [0, total_count // 4, total_count // 2, total_count - 100]
+        
+        for offset in offsets:
+            if offset < 0:
+                continue
+                
+            console.print(f"\n[dim]🔍 Testing offset {offset:,} (page {offset//50 + 1})[/dim]")
+            
+            # Without index - needs to sort entire dataset before applying OFFSET
+            time1, _ = SimpleBenchmark.timed(
+                self.db.execute_query, 
+                f"SELECT user_id, age, email FROM {self.TABLE_NAME} ORDER BY age, user_id OFFSET %s LIMIT 50", 
+                (offset,)
+            )
+            console.print(f"[red]⏱️  Without index:[/red] [white]{time1:.4f}s[/white]")
+            
+            # With composite index - can seek directly to the right position
+            self.db.execute_query(f"CREATE INDEX idx_users_age_userid ON {self.TABLE_NAME}(age, user_id)")
+            
+            time2, _ = SimpleBenchmark.timed(
+                self.db.execute_query, 
+                f"SELECT user_id, age, email FROM {self.TABLE_NAME} ORDER BY age, user_id OFFSET %s LIMIT 50", 
+                (offset,)
+            )
+            console.print(f"[green]⚡ With composite index:[/green] [white]{time2:.4f}s[/white] | [cyan]Speedup: {time1/time2:.1f}x[/cyan]")
+            
+            self.db.execute_query(f"DROP INDEX idx_users_age_userid")
