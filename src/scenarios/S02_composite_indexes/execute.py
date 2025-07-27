@@ -23,7 +23,7 @@ class Execute(BaseExecute):
         test_age, test_city = sample[0]
         
         time1, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE age = %s AND city = %s", (test_age, test_city))
-        console.print(f"[red]⏱️  Without index:[/red] [white]{time1:.4f}s[/white]")
+        console.print(f"[red]⏱️  Without composite index:[/red] [white]{time1:.4f}s[/white]")
         
         self.db.execute_query(f"CREATE INDEX idx_users_age_city ON {self.TABLE_NAME}(age, city)")
         
@@ -40,7 +40,7 @@ class Execute(BaseExecute):
         test_country = country_result[0][0]
         
         time1, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT user_id, age FROM {self.TABLE_NAME} WHERE country = %s ORDER BY age LIMIT 100", (test_country,))
-        console.print(f"[red]⏱️  Without index:[/red] [white]{time1:.4f}s[/white]")
+        console.print(f"[red]⏱️  Without composite index:[/red] [white]{time1:.4f}s[/white]")
         
         self.db.execute_query(f"CREATE INDEX idx_users_country_age ON {self.TABLE_NAME}(country, age)")
         
@@ -89,7 +89,7 @@ class Execute(BaseExecute):
                 f"SELECT user_id, age, email FROM {self.TABLE_NAME} ORDER BY age, user_id OFFSET %s LIMIT 50", 
                 (offset,)
             )
-            console.print(f"[red]⏱️  Without index:[/red] [white]{time1:.4f}s[/white]")
+            console.print(f"[red]⏱️  Without composite index:[/red] [white]{time1:.4f}s[/white]")
             
             # With composite index - can seek directly to the right position
             self.db.execute_query(f"CREATE INDEX idx_users_age_userid ON {self.TABLE_NAME}(age, user_id)")
