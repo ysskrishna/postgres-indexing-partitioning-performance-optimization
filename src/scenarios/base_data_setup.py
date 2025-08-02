@@ -11,7 +11,7 @@ class Setup(BaseSetup):
         self.TABLE_NAME = "users"
     
     def setup(self, users: int = 1_000_000):
-        """Setup tables and data for basic index demonstrations with 1M users."""
+        """Setup tables and data for all scenarios with 1M users."""
         try:
             self.db.drop_table_if_exists(self.TABLE_NAME)
             
