@@ -76,6 +76,47 @@ class DataGenerator:
             )
         return users
     
+    def generate_users_data_list_partitioning_country(self, count: int, start_index: int = 0) -> List[Tuple]:
+        """Generate optimized user data using firstname+lastname+index for uniqueness with skewed country distribution."""
+        first_names = [self.fake.first_name() for _ in range(500)]
+        last_names = [self.fake.last_name() for _ in range(500)]
+        cities = [self.fake.city() for _ in range(200)]
+
+        # Skewed country distribution
+        popular_countries = ["United States", "India", "China"]
+        other_countries = [self.fake.country() for _ in range(97)]  # remaining countries
+
+        created_at_start = datetime.now() - timedelta(days=365)
+        created_at_end = datetime.now()
+
+        users = []
+        for i in range(start_index, start_index + count):
+            first = random.choice(first_names)
+            last = random.choice(last_names)
+            username = f"{first.lower()}.{last.lower()}{i}"
+            email = f"{username}@example.com"
+
+            # 70% skew towards top 3 countries
+            if random.random() < 0.7:
+                country = random.choice(popular_countries)
+            else:
+                country = random.choice(other_countries)
+
+            users.append(
+                (
+                    username,
+                    email,
+                    first,
+                    last,
+                    random.randint(18, 80),
+                    random.choice(cities),
+                    country,
+                    self.random_datetime(created_at_start, created_at_end)
+                )
+            )
+        return users
+
+    
     def generate_orders_data(self, count: int, user_count: int, start_index: int = 0) -> List[Tuple]:
         """Generate orders data with foreign key references to users."""
         orders = []
