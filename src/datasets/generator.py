@@ -26,6 +26,16 @@ class DataGenerator:
             created_at TIMESTAMP
         );
         """
+    def create_orders_table(self, table_name: str) -> str:
+        """Create orders table SQL."""
+        return f"""
+        CREATE TABLE IF NOT EXISTS {table_name} (
+            order_id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(user_id),
+            order_date TIMESTAMP,
+            total_amount DECIMAL(10, 2)
+        );
+        """
     
     def random_datetime(self, start: datetime, end: datetime) -> datetime:
         """
@@ -65,3 +75,22 @@ class DataGenerator:
                 )
             )
         return users
+    
+    def generate_orders_data(self, count: int, user_count: int, start_index: int = 0) -> List[Tuple]:
+        """Generate orders data with foreign key references to users."""
+        orders = []
+        order_date_start = datetime.now() - timedelta(days=365)
+        order_date_end = datetime.now()
+        
+        for i in range(start_index, start_index + count):
+            user_id = random.randint(1, user_count)  # Reference existing users
+            order_date = self.random_datetime(order_date_start, order_date_end)
+            total_amount = round(random.uniform(10.0, 1000.0), 2)
+            
+            orders.append((
+                user_id,
+                order_date,
+                total_amount
+            ))
+        
+        return orders
