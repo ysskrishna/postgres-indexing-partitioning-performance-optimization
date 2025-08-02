@@ -41,11 +41,11 @@ class Execute(BaseExecute):
         
         # Test INSERT method
         time1, _ = SimpleBenchmark.timed(self._bulk_insert_method, INSERT_TABLE, columns, test_data)
-        console.print(f"[red]⏱️  INSERT method:[/red] [bold]{time1:.4f}s[/bold]")
+        console.print(f"[red]⏱️  INSERT method:[/red] [white]{time1:.4f}s[/white]")
         
         # Test COPY method
         time2, _ = SimpleBenchmark.timed(self.db.bulk_insert_copy, COPY_TABLE, columns, test_data)
-        console.print(f"[green]⚡ COPY method:[/green] [bold]{time2:.4f}s[/bold] | [cyan]Speedup: {time1/time2:.1f}x[/cyan]")
+        console.print(f"[green]⚡ COPY method:[/green] [white]{time2:.4f}s[/white] | [cyan]Speedup: {time1/time2:.1f}x[/cyan]")
         
         self.db.drop_table_if_exists(INSERT_TABLE)
         self.db.drop_table_if_exists(COPY_TABLE)
@@ -67,14 +67,14 @@ class Execute(BaseExecute):
         time1, _ = SimpleBenchmark.timed(self.db.bulk_insert_copy, DATA_FIRST_TABLE, columns, test_data)
         time1_idx, _ = SimpleBenchmark.timed(self.db.execute_query, f"CREATE INDEX idx_{DATA_FIRST_TABLE}_age ON {DATA_FIRST_TABLE}(age)")
         total_time1 = time1 + time1_idx
-        console.print(f"[red]⏱️  Data first, then index:[/red] [bold]{total_time1:.4f}s[/bold] (data: {time1:.2f}s + index: {time1_idx:.2f}s)")
+        console.print(f"[red]⏱️  Data first, then index:[/red] [white]{total_time1:.4f}s[/white] (data: {time1:.2f}s + index: {time1_idx:.2f}s)")
         
         # Strategy 2: Index first, then data
         self.db.execute_query(self.generator.create_users_table(INDEX_FIRST_TABLE))
         time2_idx, _ = SimpleBenchmark.timed(self.db.execute_query, f"CREATE INDEX idx_{INDEX_FIRST_TABLE}_age ON {INDEX_FIRST_TABLE}(age)")
         time2, _ = SimpleBenchmark.timed(self.db.bulk_insert_copy, INDEX_FIRST_TABLE, columns, test_data)
         total_time2 = time2 + time2_idx
-        console.print(f"[green]⚡ Index first, then data:[/green] [bold]{total_time2:.4f}s[/bold] (index: {time2_idx:.2f}s + data: {time2:.2f}s)")
+        console.print(f"[green]⚡ Index first, then data:[/green] [white]{total_time2:.4f}s[/white] (index: {time2_idx:.2f}s + data: {time2:.2f}s)")
         
         if total_time1 < total_time2:
             console.print(f"[cyan]📊 Data-first is {total_time2/total_time1:.1f}x faster[/cyan]")
@@ -97,6 +97,6 @@ class Execute(BaseExecute):
             
             time_taken, _ = SimpleBenchmark.timed(self.db.bulk_insert_copy, table_name, columns, test_data)
             rate = batch_size / time_taken
-            console.print(f"[blue]📊 Batch {batch_size:,}:[/blue] [bold]{time_taken:.4f}s[/bold] ([cyan]{rate:.0f} records/sec[/cyan])")
+            console.print(f"[blue]📊 Batch {batch_size:,}:[/blue] [white]{time_taken:.4f}s[/white] ([cyan]{rate:.0f} records/sec[/cyan])")
             
             self.db.drop_table_if_exists(table_name)

@@ -22,7 +22,7 @@ class Execute(BaseExecute):
         self.db.execute_query(f"CREATE INDEX idx_users_bloat_test ON {self.TABLE_NAME}(age)")
         
         initial_size = self.db.execute_query("SELECT pg_size_pretty(pg_relation_size('idx_users_bloat_test'))")
-        console.print(f"[blue]📊 Initial index size:[/blue] [bold]{initial_size[0][0]}[/bold]")
+        console.print(f"[blue]📊 Initial index size:[/blue] [white]{initial_size[0][0]}[/white]")
         
         # Simulate bloat with updates
         console.print("[blue]📊 Simulating bloat with updates...[/blue]")
@@ -32,7 +32,7 @@ class Execute(BaseExecute):
             console.print(f"[yellow]⚙️  Updated {i + 10000:,} records...[/yellow]")
         
         bloated_size = self.db.execute_query("SELECT pg_size_pretty(pg_relation_size('idx_users_bloat_test'))")
-        console.print(f"[red]📊 Bloated index size:[/red] [bold]{bloated_size[0][0]}[/bold]")
+        console.print(f"[red]📊 Bloated index size:[/red] [white]{bloated_size[0][0]}[/white]")
         
         # Calculate bloat percentage estimate
         console.print("[cyan]📊 Index bloat created through updates[/cyan]")
@@ -50,14 +50,14 @@ class Execute(BaseExecute):
         test_city = city_result[0][0]
         
         time1, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE city = %s", (test_city,))
-        console.print(f"[green]⚡ Fresh index performance:[/green] [bold]{time1:.4f}s[/bold]")
+        console.print(f"[green]⚡ Fresh index performance:[/green] [white]{time1:.4f}s[/white]")
         
         # Create bloat by updating many records
         console.print("[blue]📊 Creating index bloat...[/blue]")
         self.db.execute_query(f"UPDATE {self.TABLE_NAME} SET city = city || '' WHERE user_id % 5 = 0")
         
         time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE city = %s", (test_city,))
-        console.print(f"[red]⏱️  Bloated index performance:[/red] [bold]{time2:.4f}s[/bold]")
+        console.print(f"[red]⏱️  Bloated index performance:[/red] [white]{time2:.4f}s[/white]")
         
         if time2 > time1:
             console.print(f"[cyan]📊 Performance degraded by {((time2-time1)/time1)*100:.1f}%[/cyan]")
@@ -77,15 +77,15 @@ class Execute(BaseExecute):
         
         # Test performance before reindex
         time1, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE first_name LIKE 'J%'")
-        console.print(f"[red]⏱️  Before reindex:[/red] [bold]{time1:.4f}s[/bold]")
+        console.print(f"[red]⏱️  Before reindex:[/red] [white]{time1:.4f}s[/white]")
         
         # Reindex
         console.print("[blue]📊 Performing REINDEX...[/blue]")
         reindex_time, _ = SimpleBenchmark.timed(self.db.execute_query, "REINDEX INDEX idx_users_reindex_test")
-        console.print(f"[yellow]⚙️  Reindex time:[/yellow] [bold]{reindex_time:.4f}s[/bold]")
+        console.print(f"[yellow]⚙️  Reindex time:[/yellow] [white]{reindex_time:.4f}s[/white]")
         
         # Test performance after reindex
         time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE first_name LIKE 'J%'")
-        console.print(f"[green]⚡ After reindex:[/green] [bold]{time2:.4f}s[/bold] | [cyan]Improvement: {time1/time2:.1f}x[/cyan]")
+        console.print(f"[green]⚡ After reindex:[/green] [white]{time2:.4f}s[/white] | [cyan]Improvement: {time1/time2:.1f}x[/cyan]")
         
         self.db.execute_query("DROP INDEX idx_users_reindex_test")

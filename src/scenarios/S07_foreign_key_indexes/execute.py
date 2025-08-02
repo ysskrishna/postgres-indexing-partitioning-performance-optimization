@@ -19,12 +19,12 @@ class Execute(BaseExecute):
         console.print("\n[bold yellow]📊 Test: Join Performance (users with orders)[/bold yellow]")
         
         time1, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT u.username, COUNT(o.order_id) FROM {self.TABLE_USERS} u LEFT JOIN {self.TABLE_ORDERS} o ON u.user_id = o.user_id GROUP BY u.user_id, u.username LIMIT 1000")
-        console.print(f"[red]⏱️  Without FK index:[/red] [bold]{time1:.4f}s[/bold]")
+        console.print(f"[red]⏱️  Without FK index:[/red] [white]{time1:.4f}s[/white]")
         
         self.db.execute_query(f"CREATE INDEX idx_user_orders_user_id ON {self.TABLE_ORDERS}(user_id)")
         
         time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT u.username, COUNT(o.order_id) FROM {self.TABLE_USERS} u LEFT JOIN {self.TABLE_ORDERS} o ON u.user_id = o.user_id GROUP BY u.user_id, u.username LIMIT 1000")
-        console.print(f"[green]⚡ With FK index:[/green] [bold]{time2:.4f}s[/bold] | [cyan]Speedup: {time1/time2:.1f}x[/cyan]")
+        console.print(f"[green]⚡ With FK index:[/green] [white]{time2:.4f}s[/white] | [cyan]Speedup: {time1/time2:.1f}x[/cyan]")
         
         self.db.execute_query("DROP INDEX idx_user_orders_user_id")
 
@@ -48,12 +48,12 @@ class Execute(BaseExecute):
             test_user_id = user_result[0][0]
             
             time1, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_ORDERS} WHERE user_id = %s", (test_user_id,))
-            console.print(f"[red]⏱️  Without FK index:[/red] [bold]{time1:.4f}s[/bold]")
+            console.print(f"[red]⏱️  Without FK index:[/red] [white]{time1:.4f}s[/white]")
             
             self.db.execute_query(f"CREATE INDEX idx_orders_userid_fk ON {self.TABLE_ORDERS}(user_id)")
             
             time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_ORDERS} WHERE user_id = %s", (test_user_id,))
-            console.print(f"[green]⚡ With FK index:[/green] [bold]{time2:.4f}s[/bold] | [cyan]Speedup: {time1/time2:.1f}x[/cyan]")
+            console.print(f"[green]⚡ With FK index:[/green] [white]{time2:.4f}s[/white] | [cyan]Speedup: {time1/time2:.1f}x[/cyan]")
             
             self.db.execute_query("DROP INDEX idx_orders_userid_fk")
         else:
