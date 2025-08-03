@@ -32,7 +32,7 @@ def run(
         console.print(f"[yellow]⚙️  Running {scenario}...[/yellow]")
         scenario_manager.run(scenario)
         console.print(f"[green]✅ {scenario} completed successfully![/green]")
-        console.save_html("report.html")
+        console.save_html(f"postgres_{scenario}_report.html")
     except Exception as e:
         console.print(f"[red]❌ Error: {e}[/red]")
         raise typer.Exit(1)
@@ -71,15 +71,16 @@ def run_all():
         border_style="blue"
     ))
     
+    filename = "postgres_all_scenarios_report.html"
     if failed_scenarios:
         console.print("[red]Failed scenarios:[/red]")
         for scenario in failed_scenarios:
             console.print(f"  [red]• {scenario}[/red]")
-        console.save_html("report.html")
+        console.save_html(filename)
         raise typer.Exit(1)
     else:
         console.print("[green]🎉 All scenarios completed successfully![/green]")
-        console.save_html("report.html")
+        console.save_html(filename)
 
 if __name__ == "__main__":
     app() 

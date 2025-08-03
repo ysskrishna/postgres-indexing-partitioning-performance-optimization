@@ -12,7 +12,6 @@ class Execute(BaseExecute):
     def execute(self):
         self.run_duplicate_prevention()
         self.run_lookup_performance()
-        self.run_composite_unique()
 
     def run_duplicate_prevention(self):
         console.print("\n[bold yellow]📊 Test: Duplicate Prevention (email uniqueness)[/bold yellow]")

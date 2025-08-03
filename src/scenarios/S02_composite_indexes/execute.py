@@ -27,6 +27,10 @@ class Execute(BaseExecute):
         
         self.db.execute_query(f"CREATE INDEX idx_users_age_city ON {self.TABLE_NAME}(age, city)")
         
+        # Get random age and city from existing data
+        sample = self.db.execute_query(f"SELECT age, city FROM {self.TABLE_NAME} ORDER BY RANDOM() LIMIT 1")
+        test_age, test_city = sample[0]
+        
         time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE age = %s AND city = %s", (test_age, test_city))
         console.print(f"[green]⚡ With composite index:[/green] [white]{time2:.4f}s[/white] | [cyan]Speedup: {time1/time2:.1f}x[/cyan]")
         
@@ -43,6 +47,10 @@ class Execute(BaseExecute):
         console.print(f"[red]⏱️  Without composite index:[/red] [white]{time1:.4f}s[/white]")
         
         self.db.execute_query(f"CREATE INDEX idx_users_country_age ON {self.TABLE_NAME}(country, age)")
+        
+        # Get random country from existing data
+        country_result = self.db.execute_query(f"SELECT country FROM {self.TABLE_NAME} ORDER BY RANDOM() LIMIT 1")
+        test_country = country_result[0][0]
         
         time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT user_id, age FROM {self.TABLE_NAME} WHERE country = %s ORDER BY age LIMIT 100", (test_country,))
         console.print(f"[green]⚡ With composite index:[/green] [white]{time2:.4f}s[/white] | [cyan]Speedup: {time1/time2:.1f}x[/cyan]")

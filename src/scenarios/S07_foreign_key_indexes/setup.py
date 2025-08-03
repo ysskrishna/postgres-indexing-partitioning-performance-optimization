@@ -11,7 +11,7 @@ class Setup(BaseSetup):
         self.TABLE_USERS = "users"
         self.TABLE_ORDERS = "orders"
     
-    def setup(self, users: int = 500_000, orders: int = 1_5000_000):
+    def setup(self, users: int = 500_000, orders: int = 2_500_000):
         """Setup tables and data for foreign key index demonstrations with 1M users and 5M orders."""
         try:
             self.db.drop_table_if_exists(self.TABLE_USERS)
