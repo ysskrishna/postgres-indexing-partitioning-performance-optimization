@@ -10,7 +10,7 @@ from scenario_manager import ScenarioManager
 
 app = typer.Typer(
     name="postgres-performance",
-    help="PostgreSQL Indexing and Partitioning Performance Optimization Tool",
+    help="CLI Tool for running performance tests on PostgreSQL",
     add_completion=False
 )
 
@@ -36,6 +36,50 @@ def run(
     except Exception as e:
         console.print(f"[red]❌ Error: {e}[/red]")
         raise typer.Exit(1)
+
+@app.command()
+def run_all():
+    """Setup and run all available scenarios."""
+    scenarios = scenario_manager.list_scenarios()
+    total_scenarios = len(scenarios)
+    
+    console.print(Panel.fit(
+        f"[bold cyan]Running All Scenarios ({total_scenarios} total)[/bold cyan]", 
+        border_style="cyan"
+    ))
+    
+    successful_scenarios = []
+    failed_scenarios = []
+    
+    for i, scenario in enumerate(scenarios, 1):
+        try:
+            console.print(f"[yellow]⚙️  Running {scenario} ({i}/{total_scenarios})...[/yellow]")
+            scenario_manager.run(scenario)
+            console.print(f"[green]✅ {scenario} completed successfully![/green]")
+            successful_scenarios.append(scenario)
+        except Exception as e:
+            console.print(f"[red]❌ {scenario} failed: {e}[/red]")
+            failed_scenarios.append(scenario)
+            # Continue with next scenario instead of stopping
+    
+    # Summary
+    console.print(Panel.fit(
+        f"[bold]Test Summary:[/bold]\n"
+        f"[green]✅ Successful: {len(successful_scenarios)}[/green]\n"
+        f"[red]❌ Failed: {len(failed_scenarios)}[/red]\n"
+        f"[blue]📊 Total: {total_scenarios}[/blue]",
+        border_style="blue"
+    ))
+    
+    if failed_scenarios:
+        console.print("[red]Failed scenarios:[/red]")
+        for scenario in failed_scenarios:
+            console.print(f"  [red]• {scenario}[/red]")
+        console.save_html("report.html")
+        raise typer.Exit(1)
+    else:
+        console.print("[green]🎉 All scenarios completed successfully![/green]")
+        console.save_html("report.html")
 
 if __name__ == "__main__":
     app() 
