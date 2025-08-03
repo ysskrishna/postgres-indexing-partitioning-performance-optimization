@@ -55,6 +55,9 @@ class ScenarioManager:
             execute_instance = execute_class()
             execute_instance.execute()
         
+            console.print(f"[bold blue] Cleaning up Scenario {name}[/bold blue]")
+            execute_instance.cleanup()
+        
         console.print(Panel.fit(
             f"[bold blue]Scenario {name} completed[/bold blue]",
             border_style="blue"

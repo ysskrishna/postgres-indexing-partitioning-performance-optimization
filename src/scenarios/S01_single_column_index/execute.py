@@ -27,7 +27,8 @@ class Execute(BaseExecute):
         console.print("\n[bold]📊 Test: Range Query (created_at BETWEEN)[/bold]")
 
         # Get date range from existing data
-        min_date, max_date = self.db.execute_query(f"SELECT MIN(created_at), MAX(created_at) FROM {self.TABLE_NAME}")
+        result = self.db.execute_query(f"SELECT MIN(created_at), MAX(created_at) FROM {self.TABLE_NAME}")
+        min_date, max_date = result[0]
         random_start, random_end = self.get_random_range(min_date, max_date, days=30)
         
         time1, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*) FROM {self.TABLE_NAME} WHERE created_at BETWEEN %s AND %s", (random_start, random_end))
@@ -74,3 +75,9 @@ class Execute(BaseExecute):
         console.print(f"[green]⚡ With index:[/green] [white]{time2:.4f}s[/white] | [white]Speedup: {time1/time2:.1f}x[/white]")
 
         self.db.execute_query(f"DROP INDEX idx_users_age_in")
+    
+    def cleanup(self):
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_created_at")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_age")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_age_in")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")

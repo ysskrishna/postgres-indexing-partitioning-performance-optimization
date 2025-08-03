@@ -100,3 +100,14 @@ class Execute(BaseExecute):
             console.print(f"[blue]📊 Batch {batch_size:,}:[/blue] [white]{time_taken:.4f}s[/white] ([cyan]{rate:.0f} records/sec[/cyan])")
             
             self.db.drop_table_if_exists(table_name)
+        
+    def cleanup(self):
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}_insert")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}_copy")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}_data_first")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}_index_first")
+        self.db.execute_query(f"DROP TABLE IF EXISTS test_batch_1000")
+        self.db.execute_query(f"DROP TABLE IF EXISTS test_batch_10000")
+        self.db.execute_query(f"DROP TABLE IF EXISTS test_batch_50000")
+        self.db.execute_query(f"DROP TABLE IF EXISTS test_batch_200000")

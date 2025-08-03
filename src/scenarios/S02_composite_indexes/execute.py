@@ -110,3 +110,11 @@ class Execute(BaseExecute):
             console.print(f"[green]⚡ With composite index:[/green] [white]{time2:.4f}s[/white] | [cyan]Speedup: {time1/time2:.1f}x[/cyan]")
             
             self.db.execute_query(f"DROP INDEX idx_users_age_userid")
+        
+    def cleanup(self):
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_age_userid")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_age_city")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_country_age")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_city_age")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_age_city")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")

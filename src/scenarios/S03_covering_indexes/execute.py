@@ -13,6 +13,7 @@ class Execute(BaseExecute):
         self.run_select_specific_columns()
         self.run_count_with_where()
         self.run_partial_vs_full_coverage()
+        self.cleanup()
 
     def run_select_specific_columns(self):
         console.print("\n[bold yellow]📊 Test: SELECT Specific Columns (age, first_name)[/bold yellow]")
@@ -66,3 +67,10 @@ class Execute(BaseExecute):
         time3, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT age, city, country FROM {self.TABLE_NAME} WHERE city = %s LIMIT 100", (full_cov_city,))
         console.print(f"[green]⚡ Full coverage (all columns):[/green] [white]{time3:.4f}s[/white] | [cyan]Speedup: {time1/time3:.1f}x[/cyan]")
         self.db.execute_query(f"DROP INDEX idx_users_full_cover")
+    
+    def cleanup(self):
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_age_covering")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_city_covering")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_partial_cover")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_full_cover")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")

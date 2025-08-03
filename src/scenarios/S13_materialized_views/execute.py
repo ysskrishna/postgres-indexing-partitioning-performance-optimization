@@ -120,3 +120,9 @@ class Execute(BaseExecute):
         # Performance vs freshness summary
         console.print("[cyan]📊 Trade-off: MVs provide fast queries but may show stale data[/cyan]")
         console.print("[cyan]📊 Refresh frequency determines data freshness vs system load[/cyan]")
+    
+    def cleanup(self):
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_mv_country_unique")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")
+        self.db.execute_query(f"DROP MATERIALIZED VIEW IF EXISTS user_country_stats")
+        self.db.execute_query(f"DROP MATERIALIZED VIEW IF EXISTS user_age_distribution")

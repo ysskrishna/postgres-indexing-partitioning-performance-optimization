@@ -105,3 +105,8 @@ class Execute(BaseExecute):
         total_records = self.db.execute_query("SELECT COUNT(*) FROM users_by_country")[0][0]
         
         console.print(f"[cyan]📊 Default partition: {default_total:,} records ({(default_total/total_records)*100:.1f}%)[/cyan]")
+    
+    def cleanup(self):
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")
+        self.db.execute_query(f"DROP TABLE IF EXISTS users_by_country")
+        self.db.execute_query(f"DROP TABLE IF EXISTS users_country_default")

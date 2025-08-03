@@ -90,3 +90,9 @@ class Execute(BaseExecute):
         console.print(f"[green]⚡ Partition dropped:[/green] [bold]{drop_time:.4f}s[/bold]")
         
         console.print("[cyan]📊 Partition management operations are very fast[/cyan]")
+    
+    def cleanup(self):
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")
+        self.db.execute_query(f"DROP TABLE IF EXISTS users_partitioned")
+        self.db.execute_query(f"DROP TABLE IF EXISTS users_part_future")
+        

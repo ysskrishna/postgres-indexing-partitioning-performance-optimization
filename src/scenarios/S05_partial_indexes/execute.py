@@ -91,3 +91,10 @@ class Execute(BaseExecute):
         console.print(f"[cyan]📊 Partial index covers {coverage_pct:.1f}% of records with smaller storage[/cyan]")
         
         self.db.execute_query(f"DROP INDEX idx_users_partial_city")
+
+    def cleanup(self):
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_recent_age")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_working_age")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_full_city")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_partial_city")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")

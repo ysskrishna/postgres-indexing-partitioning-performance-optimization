@@ -39,3 +39,8 @@ class Execute(BaseExecute):
         console.print(f"[green]⚡ With expression index:[/green] [white]{time2:.4f}s[/white] | [cyan]Speedup: {time1/time2:.1f}x[/cyan]")
         
         self.db.execute_query(f"DROP INDEX idx_users_age_group")
+    
+    def cleanup(self):
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_lower_firstname")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_age_group")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")

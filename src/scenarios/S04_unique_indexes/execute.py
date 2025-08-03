@@ -47,3 +47,7 @@ class Execute(BaseExecute):
         console.print(f"[blue]📊 Non-unique index lookup:[/blue] [white]{time2:.4f}s[/white]")
         
         self.db.execute_query(f"DROP INDEX idx_users_city_nonunique")
+    
+    def cleanup(self):
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_city_nonunique")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")

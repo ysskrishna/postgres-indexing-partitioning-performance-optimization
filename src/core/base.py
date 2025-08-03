@@ -9,3 +9,7 @@ class BaseExecute(ABC):
     @abstractmethod
     def execute(self, *args, **kwargs):
         pass
+    
+    @abstractmethod
+    def cleanup(self, *args, **kwargs):
+        pass

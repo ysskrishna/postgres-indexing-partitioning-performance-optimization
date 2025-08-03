@@ -89,3 +89,9 @@ class Execute(BaseExecute):
         console.print(f"[green]⚡ After reindex:[/green] [white]{time2:.4f}s[/white] | [cyan]Improvement: {time1/time2:.1f}x[/cyan]")
         
         self.db.execute_query("DROP INDEX idx_users_reindex_test")
+    
+    def cleanup(self):
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_bloat_test")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_perf_test")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_reindex_test")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")

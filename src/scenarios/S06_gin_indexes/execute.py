@@ -56,3 +56,8 @@ class Execute(BaseExecute):
         console.print(f"[green]⚡ With GIN index:[/green] [white]{time2:.4f}s[/white] | [cyan]Speedup: {time1/time2:.1f}x[/cyan]")
         
         self.db.execute_query(f"DROP INDEX idx_users_tags_overlap_gin")
+    
+    def cleanup(self):
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_tags_gin")
+        self.db.execute_query(f"DROP INDEX IF EXISTS idx_users_tags_overlap_gin")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")
