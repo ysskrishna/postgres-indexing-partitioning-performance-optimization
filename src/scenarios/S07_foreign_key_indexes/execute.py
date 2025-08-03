@@ -62,5 +62,5 @@ class Execute(BaseExecute):
     def cleanup(self):
         self.db.execute_query(f"DROP INDEX IF EXISTS idx_user_orders_user_id")
         self.db.execute_query(f"DROP INDEX IF EXISTS idx_orders_userid_fk")
-        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_USERS}")
         self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_ORDERS}")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_USERS}")

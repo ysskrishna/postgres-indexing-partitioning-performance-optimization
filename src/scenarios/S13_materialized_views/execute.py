@@ -123,6 +123,7 @@ class Execute(BaseExecute):
     
     def cleanup(self):
         self.db.execute_query(f"DROP INDEX IF EXISTS idx_mv_country_unique")
-        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")
         self.db.execute_query(f"DROP MATERIALIZED VIEW IF EXISTS user_country_stats")
         self.db.execute_query(f"DROP MATERIALIZED VIEW IF EXISTS user_age_distribution")
+        self.db.execute_query(f"DROP TABLE IF EXISTS {self.TABLE_NAME}")
+        
