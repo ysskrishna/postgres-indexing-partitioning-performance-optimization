@@ -31,11 +31,11 @@ class Execute(BaseExecute):
         
         # Query partitioned table (should use single partition)
         time1, _ = SimpleBenchmark.timed(self.db.execute_query, "SELECT COUNT(*), AVG(age) FROM users_by_country WHERE country = %s", (top_country,))
-        console.print(f"[green]⚡ Partitioned table query:[/green] [bold]{time1:.4f}s[/bold]")
+        console.print(f"[green]⚡ Partitioned table query:[/green] [white]{time1:.4f}s[/white]")
         
         # Query original table for comparison
         time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT COUNT(*), AVG(age) FROM {self.TABLE_NAME} WHERE country = %s", (top_country,))
-        console.print(f"[blue]📊 Original table query:[/blue] [bold]{time2:.4f}s[/bold]")
+        console.print(f"[blue]📊 Original table query:[/blue] [white]{time2:.4f}s[/white]")
         
         # Show partition pruning benefit
         if time2 > time1:
@@ -58,15 +58,15 @@ class Execute(BaseExecute):
         # Query across multiple partitions
         placeholders = ', '.join(['%s'] * len(country_list))
         time1, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT country, COUNT(*) FROM users_by_country WHERE country IN ({placeholders}) GROUP BY country", country_list)
-        console.print(f"[red]⏱️  Partitioned (multiple partitions):[/red] [bold]{time1:.4f}s[/bold]")
+        console.print(f"[red]⏱️  Partitioned (multiple partitions):[/red] [white]{time1:.4f}s[/white]")
         
         # Same query on original table
         time2, _ = SimpleBenchmark.timed(self.db.execute_query, f"SELECT country, COUNT(*) FROM {self.TABLE_NAME} WHERE country IN ({placeholders}) GROUP BY country", country_list)
-        console.print(f"[blue]📊 Original table:[/blue] [bold]{time2:.4f}s[/bold]")
+        console.print(f"[blue]📊 Original table:[/blue] [white]{time2:.4f}s[/white]")
         
         # Query all countries (hits all partitions)
         time3, _ = SimpleBenchmark.timed(self.db.execute_query, "SELECT COUNT(DISTINCT country) FROM users_by_country")
-        console.print(f"[yellow]⚙️  All partitions query:[/yellow] [bold]{time3:.4f}s[/bold]")
+        console.print(f"[yellow]⚙️  All partitions query:[/yellow] [white]{time3:.4f}s[/white]")
 
     def run_default_partition(self):
         console.print("\n[bold yellow]📊 Test: Default Partition Behavior[/bold yellow]")
