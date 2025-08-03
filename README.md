@@ -9,6 +9,12 @@
 
 A PostgreSQL performance testing framework that benchmarks indexing and partitioning strategies. Helps DBAs and developers measure the real-world impact of optimization techniques through automated scenarios.
 
+## 📊 Example Report
+
+You can view an example report showcasing the output format and performance insights:
+
+➡️ **[View Example Report](./media/example_reports/postgres_all_scenarios_report.html)**
+
 ## 🚀 Features
 
 - **Comprehensive Performance Scenarios**: Comprehensive testing of various PostgreSQL optimization techniques
