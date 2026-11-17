@@ -6,6 +6,7 @@
 [![Docker](https://img.shields.io/badge/Docker-Required-blue.svg)](https://www.docker.com/)
 [![Typer](https://img.shields.io/badge/Typer-0.9.0+-blue.svg)](https://typer.tiangolo.com/)
 [![Rich](https://img.shields.io/badge/Rich-13.7.0+-green.svg)](https://rich.readthedocs.io/)
+[![Author site](https://img.shields.io/badge/author-ysskrishna.space-informational)](https://ysskrishna.space)
 
 A PostgreSQL performance testing framework that benchmarks indexing and partitioning strategies. Helps DBAs and developers measure the real-world impact of optimization techniques through automated scenarios.
 
@@ -157,8 +158,32 @@ The tool connects to PostgreSQL using these default settings:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
+## Built and maintained by
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+PostgreSQL Indexing and Partitioning Performance Optimization is built and maintained by:
 
-**Author:** [Siva Sai Krishna](https://github.com/ysskrishna)
+| | Name | GitHub | Role |
+|---|------|--------|------|
+| <img src="https://github.com/ysskrishna.png?size=120" width="60" height="60" alt="Y. Siva Sai Krishna"> | **Y. Siva Sai Krishna** | [@ysskrishna](https://github.com/ysskrishna) | Creator |
+
+## Support
+
+If you find this project helpful:
+
+- ⭐ Star the repository
+- 🐛 [Report issues](https://github.com/ysskrishna/postgres-indexing-partitioning-performance-optimization/issues)
+- 🔀 Submit pull requests
+- 💝 [Sponsor on GitHub](https://github.com/sponsors/ysskrishna)
+
+## License
+
+MIT © [Y. Siva Sai Krishna](https://github.com/ysskrishna) — see [LICENSE](LICENSE) for details.
+
+---
+
+<p align="left">
+  <a href="https://github.com/ysskrishna">Author's GitHub</a> •
+  <a href="https://linkedin.com/in/ysskrishna">Author's LinkedIn</a> •
+  <a href="https://ysskrishna.space">Author's site</a> •
+  <a href="https://github.com/ysskrishna/postgres-indexing-partitioning-performance-optimization/issues">Report Issues</a>
+</p>
